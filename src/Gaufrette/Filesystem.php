@@ -3,6 +3,7 @@
 namespace Gaufrette;
 
 use Gaufrette\Adapter\ListKeysAware;
+use Gaufrette\Exception as GaufretteException;
 
 /**
  * A filesystem is used to store and retrieve files.
@@ -63,7 +64,9 @@ class Filesystem implements FilesystemInterface
             throw new Exception\UnexpectedFile($targetKey);
         }
 
-        if (!$this->adapter->rename($sourceKey, $targetKey)) {
+        try {
+            $this->adapter->rename($sourceKey, $targetKey);
+        } catch (GaufretteException $e) {
             throw new \RuntimeException(sprintf('Could not rename the "%s" key to "%s".', $sourceKey, $targetKey));
         }
 
@@ -136,13 +139,14 @@ class Filesystem implements FilesystemInterface
 
         $this->assertHasFile($key);
 
-        if ($this->adapter->delete($key)) {
+        try {
+            $this->adapter->delete($key);
             $this->removeFromRegister($key);
 
             return true;
+        } catch (GaufretteException $e) {
+            throw new \RuntimeException(sprintf('Could not remove the "%s" key.', $key));
         }
-
-        throw new \RuntimeException(sprintf('Could not remove the "%s" key.', $key));
     }
 
     /**

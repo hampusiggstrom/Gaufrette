@@ -3,6 +3,7 @@
 namespace spec\Gaufrette;
 
 use Gaufrette\Adapter;
+use Gaufrette\Exception\StorageFailure;
 use Gaufrette\File;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -76,7 +77,7 @@ class FilesystemSpec extends ObjectBehavior
     {
         $adapter->exists('filename')->willReturn(true);
         $adapter->exists('otherFilename')->willReturn(false);
-        $adapter->rename('filename', 'otherFilename')->willReturn(false);
+        $adapter->rename('filename', 'otherFilename')->willThrow(StorageFailure::unexpectedFailure('rename', []));
 
         $this
             ->shouldThrow(new \RuntimeException('Could not rename the "filename" key to "otherFilename".'))
@@ -203,7 +204,7 @@ class FilesystemSpec extends ObjectBehavior
     function it_fails_when_delete_is_not_successful(Adapter $adapter)
     {
         $adapter->exists('filename')->willReturn(true);
-        $adapter->delete('filename')->willReturn(false);
+        $adapter->delete('filename')->willThrow(StorageFailure::unexpectedFailure('rename', []));
 
         $this
             ->shouldThrow(new \RuntimeException('Could not remove the "filename" key.'))
