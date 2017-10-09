@@ -350,8 +350,9 @@ class GoogleCloudStorage implements Adapter,
 
             throw new \RuntimeException(
                 sprintf(
-                    'The configured bucket "%s" does not exist.',
-                    $this->bucket
+                    'The configured bucket "%s" does not exist. Actual error: "%s',
+                    $this->bucket,
+                    $e->getMessage()
                 )
             );
         }
